@@ -27,7 +27,7 @@ pipeline{
       }
     }
 
-    stage('Deploy'){
+    stage('Deploying'){
     steps {
         echo "Deploying to environment: ${params.ENV}"
         sh '''
@@ -38,7 +38,6 @@ pipeline{
         else
           APP_DIR="/opt/prodapp"
         fi
-
         mkdir -p $APP_DIR
         PID=$(pgrep -f "app.jar" || true)
         if [ -n "$PID" ]; then
@@ -46,7 +45,6 @@ pipeline{
           kill -9 $PID || true
           sleep 2
         fi
-
         cp target/*.jar $APP_DIR/app.jar
         nohup java -jar $APP_DIR/app.jar > $APP_DIR/app.log 2>&1 &
         echo "✅ Started new PID: $(pgrep -f app.jar)"
