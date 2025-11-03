@@ -13,14 +13,14 @@ pipeline{
   stages{
 
     stage('Build'){
-     step{
+     steps{
        echo 'Building project'
        sh 'mvn clean package'
      } 
     }
     
     stage('Test'){
-      step{
+      steps{
         echo 'Testing'
         sh 'mvn test'
         junit '**/target/surefire-reports/*.xml'
@@ -28,7 +28,7 @@ pipeline{
     }
 
     stage('Deploy'){
-      step{
+      steps{
         echo 'Deploying'
          sh '''
         set -e
