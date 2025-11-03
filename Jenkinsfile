@@ -7,7 +7,7 @@ pipeline{
   }
   
   parameters{
-    choice(name: 'ENV', choices:['dev', 'prod'], description: 'Target environment')
+    choice(name: 'ENV', choices:['dev', 'prod'], description: 'Select target environment', defaultValue: 'dev')
   }
 
   stages{
