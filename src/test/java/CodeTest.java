@@ -12,7 +12,7 @@ public class CodeTest {
         System.setOut(new PrintStream(outContent));
 
         // Run main
-        Code.main(null);
+        code.main(null);
 
         // Restore original System.out
         System.setOut(originalOut);
