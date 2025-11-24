@@ -1,5 +1,5 @@
 public class Code {
     public static void main(String[] args) {
-        System.out.println("Hello and welcome from Hrishi's CI/CD Pipeline!");
+        System.out.println("Hello and welcome from Hrishi's new CI/CD Pipeline!");
     }
 }
