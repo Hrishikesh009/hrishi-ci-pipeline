@@ -19,6 +19,6 @@ public class CodeTest {
 
         String output = outContent.toString().trim();
 
-        assertEquals("Hello from Hrishi's CI/CD Pipeline!", output);
+        assertEquals("Hello and welcome from Hrishi's new CI/CD Pipeline!", output);
     }
 }
