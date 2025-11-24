@@ -13,6 +13,9 @@ pipeline{
   stages{
 
     stage('Build'){
+      when {
+    changeset "**/src/main/java/**"
+  }
      steps{
        echo 'Building project'
        sh 'mvn clean package'
@@ -20,6 +23,11 @@ pipeline{
     }
     
     stage('Test'){
+      when {
+    anyof {
+      changeset "**/src/test/java/**"
+      changeset "**/src/main/java/**"   // if code changed, test must run
+    }
       steps{
         echo 'Testing'
         sh 'mvn test'
@@ -28,6 +36,9 @@ pipeline{
     }
 
     stage('Deploying'){
+       when {
+    changeset "**/target/*.jar"
+  }
       steps {
         echo "Deploying to environment: ${params.ENV}"
         sh '''
