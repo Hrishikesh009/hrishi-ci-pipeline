@@ -106,7 +106,7 @@ pipeline {
           exit 1
         fi
 
-        if grep -q "Hello from Hrishi newest CI/CD Pipeline!" "$LOG_FILE"; then
+        if grep -q "Hello from Hrishi CI/CD Pipeline!" "$LOG_FILE"; then
           echo "Health Check Passed"
         else
           echo "Failed"
