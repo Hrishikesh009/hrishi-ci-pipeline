@@ -28,7 +28,7 @@ pipeline{
     }
 
     stage('Deploying'){
-    steps {
+      steps {
         echo "Deploying to environment: ${params.ENV}"
         sh '''
         set -e
@@ -49,6 +49,38 @@ pipeline{
         nohup java -jar $APP_DIR/app.jar > $APP_DIR/app.log 2>&1 &
         echo "✅ Started new PID: $(pgrep -f app.jar)"
         '''
+    }
+  }
+
+  stage('Health Check'){
+    steps{
+      echo "Running Health Check for ${params.ENV} environment"
+      sh '''
+      set -e
+
+      if [ "$ENV" = "dev" ]; then
+        APP_DIR="/opt/devapp"
+      else
+        APP_DIR="/opt/prodapp"
+      fi
+
+      LOG_FILE="$APP_DIR/app.log"
+      echo "Checking log file at: $LOG_FILE"
+      
+      if [ ! -f "$LOG_FILE" ]; then
+        echo "ERROR: Log file not found!"
+        exit 1
+      fi 
+
+      if grep -q "Hello from Hrishi's CI/CD Pipeline!" "$LOG_FILE"; then
+        echo "Health Check Passed"
+      else
+        echo "Failed"
+        echo "--------log contains-------"
+        cat "$LOG_FILE"
+        exit 1
+      fi
+      '''
     }
   }
   } 
