@@ -18,26 +18,24 @@ pipeline {
   stages {
 
     stage('Build') {
-      when {
-        changeset "**/src/main/java/**"
-      }
-      steps {
-        echo 'Building project'
-        sh 'mvn clean package'
-        // If the build succeeded, mark that we have a jar to deploy.
-        // We set this flag so Deploy/Health Check will run only when Build created artifacts.
-        script {
-    def jarExists = sh(
+  steps {
+    echo 'Building project'
+    sh 'mvn clean package'
+
+    script {
+      def jarExists = sh(
         script: 'ls target/*.jar >/dev/null 2>&1 && echo true || echo false',
         returnStdout: true
-    ).trim()
+      ).trim()
 
-    echo "Jar exists? = ${jarExists}"
-    env.BUILD_JAR = jarExists
-        }
-      }
+      echo "Jar exists? = ${jarExists}"
+
+      // SAVE IT PERMANENTLY for other stages
+      currentBuild.description = "JAR_CREATED=${jarExists}"
     }
-
+  }
+}
+    
     stage('Test') {
       when {
         anyOf {
@@ -55,8 +53,11 @@ pipeline {
     stage('Deploying') {
       // Deploy only when BUILD_JAR was set to true by the Build stage (i.e. a jar exists)
       when {
-        expression { return env.BUILD_JAR == 'true' }
+  expression {
+    return currentBuild.description.contains("JAR_CREATED=true")
+  }
       }
+      
       steps {
         echo "Deploying to environment: ${params.ENV}"
         sh '''
@@ -85,8 +86,11 @@ pipeline {
 
     stage('Health Check') {
       when {
-        expression { return env.BUILD_JAR == 'true' }
-      }
+  expression {
+    return currentBuild.description.contains("JAR_CREATED=true")
+  }
+}
+
       steps {
         echo "Running Health Check for ${params.ENV} environment"
         sh '''
@@ -106,7 +110,7 @@ pipeline {
           exit 1
         fi
 
-        if grep -q "Hello from Hrishi CI/CD Pipeline!" "$LOG_FILE"; then
+        if grep -q "Hello from Hrishi latest CI/CD Pipeline!" "$LOG_FILE"; then
           echo "Health Check Passed"
         else
           echo "Failed"
