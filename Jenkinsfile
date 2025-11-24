@@ -27,10 +27,13 @@ pipeline {
         // If the build succeeded, mark that we have a jar to deploy.
         // We set this flag so Deploy/Health Check will run only when Build created artifacts.
         script {
-          // If a jar exists under target, set BUILD_JAR to "true"
-          def rc = sh(script: 'if ls target/*.jar >/dev/null 2>&1; then echo true; else echo false; fi', returnStdout: true).trim()
-          env.BUILD_JAR = rc
-          echo "BUILD_JAR=${env.BUILD_JAR}"
+    def jarExists = sh(
+        script: 'ls target/*.jar >/dev/null 2>&1 && echo true || echo false',
+        returnStdout: true
+    ).trim()
+
+    echo "Jar exists? = ${jarExists}"
+    env.BUILD_JAR = jarExists
         }
       }
     }
